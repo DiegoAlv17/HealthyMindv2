@@ -1,0 +1,87 @@
+/* App.css */
+.app-container {
+  width: 100%;
+  height: 100vh;
+  background-image: url('assets/login-user.jpg/');
+  background-size: cover; /* Asegura que la imagen cubra todo el fondo */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .form-container {
+    background: rgba(176, 176, 176, 0.8); /* Fondo blanco con algo de transparencia */
+    padding: 30px;
+    border-radius: 10px; /* Bordes redondeados */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Sombra para el formulario */
+    width: 300px; /* Ancho del formulario */
+  }
+
+  h1 {
+    text-align: center;
+    color: #333; /* Color del texto del encabezado */
+  }
+
+  input[type="text"],
+  input[type="password"] {
+    width: 100%; /* Ancho completo */
+    padding: 10px; /* Espaciado interno */
+    margin: 10px 0; /* Espaciado externo */
+    border: 1px solid #ccc; /* Borde del input */
+    border-radius: 4px; /* Bordes redondeados */
+  }
+
+  button {
+    width: 100%; /* Ancho completo */
+    padding: 10px;
+    background-color: #D34B79; /* Color del botón */
+    color: white; /* Color del texto del botón */
+    border: none; /* Sin borde */
+    border-radius: 4px; /* Bordes redondeados */
+    cursor: pointer; /* Cambiar el cursor al pasar el ratón */
+    font-size: 16px; /* Tamaño de fuente */
+  }
+
+  button:hover {
+    background-color: #65253a; /* Color del botón al pasar el ratón */
+  }
+
+  p {
+    text-align: center; /* Centrar el texto */
+  }
+}
+
+html,
+body,
+#root,
+.app,
+.content{
+  height: 100%;
+  width: 100%;
+  font-family: 'Source Code Pro', sans-serif;
+}
+
+.app{
+  display: flex;
+  position: relative;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #FCF0E8;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #F7BFB4;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #dca99f;
+}
+
+
