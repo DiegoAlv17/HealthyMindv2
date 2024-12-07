@@ -18,13 +18,8 @@ import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "../theme";
 
 function Adminapp() {
-  const { isAuthenticated } = useContext(AuthContext);
   const [theme, colorMode] = useMode();
   const [isSidebar, setIsSidebar] = useState(true);
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" />;
-  }
 
   return (
     <ColorModeContext.Provider value={colorMode}>

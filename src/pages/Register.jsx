@@ -1,63 +1,73 @@
-import React, { useState, useContext } from 'react';
-import axios from 'axios';
-import { AuthContext } from '../context/AuthContext'; 
+import React, { useState, useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 const Register = () => {
-    const [adminName, setAdminName] = useState('');
-    const [adminEmail, setEmail] = useState('');
-    const [adminPassword, setPassword] = useState('');
-    const [errorMessage, setErrorMessage] = useState('');
-    const { login } = useContext(AuthContext); 
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [role, setRole] = useState("user");
+  const [errorMessage, setErrorMessage] = useState("");
+  const { register, login } = useContext(AuthContext); // Accedemos a 'register' y 'login'
+  const navigate = useNavigate();
 
-    const handleRegister = async (e) => {
-        e.preventDefault();
-    
-        try {
-            const response = await axios.post(
-                'http://localhost:3000/api/register',
-                {
-                    adminName,
-                    adminEmail,
-                    adminPassword,
-                },
-            );
-    
-            if (response.data.success) {
-                alert('Usuario registrado exitosamente');
-                login(response.data.token, response.data.adminName); 
-                window.location.href = "/admin"; 
-            } else {
-                throw new Error(response.data.error || 'Error en la respuesta del servidor');
-            }
-        } catch (error) {
-            setErrorMessage('Este usuario ya existe');
+  const handleRegister = async (e) => {
+    e.preventDefault();
+
+    try {
+      const user = await register({ name, email, password, role }); // Llama a register del AuthContext
+
+      if (user) {
+        await login(email, password); // Inicia sesión automáticamente después de registrarse
+        // Redirige según el rol del usuario
+        if (user.role === "admin") {
+          navigate("/admin");
+        } else if (user.role === "psicologo") {
+          navigate("/psicologos");
+        } else if (user.role === "paciente") {
+          navigate("/pacientes");
         }
-    };
-    
-    return (
-        <form onSubmit={handleRegister}>
-            <input
-                type="text"
-                value={adminName}
-                onChange={(e) => setAdminName(e.target.value)}
-                placeholder="Nombre"
-            />
-            <input
-                type="email"
-                value={adminEmail}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email"
-            />
-            <input
-                type="password"
-                value={adminPassword}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
-            />
-            <button type="submit">Registrar</button>
-            {errorMessage && <p>{errorMessage}</p>}
-        </form>
-    );
+      }
+    } catch (error) {
+      setErrorMessage(error.message || "Error al registrar el usuario.");
+    }
+  };
+
+  return (
+    <form onSubmit={handleRegister}>
+      <input
+        type="text"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        placeholder="Nombre"
+        required
+      />
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        placeholder="Email"
+        required
+      />
+      <input
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        placeholder="Password"
+        required
+      />
+      <select
+        value={role}
+        onChange={(e) => setRole(e.target.value)}
+        required
+      >
+        <option value="paciente">Paciente</option>
+        <option value="psicologo">Psicólogo</option>
+      </select>
+      <button type="submit">Registrar</button>
+      {errorMessage && <p>{errorMessage}</p>}
+    </form>
+  );
 };
 
 export default Register;

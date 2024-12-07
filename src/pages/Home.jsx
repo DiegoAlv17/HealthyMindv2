@@ -1,4 +1,6 @@
 import React from "react";
+import Post from "../components/Posts.jsx";
+
 import { Link } from "react-router-dom";
 import { Heart, Users, Building2, ArrowRight } from "lucide-react";
 
@@ -37,6 +39,23 @@ const Home = () => {
           </div>
         </div>
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent"></div>
+      </section>
+
+      {/* Posts Section */}
+      <section className="py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Artículos Recientes
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Descubre contenido relevante sobre salud mental y bienestar
+              emocional.
+            </p>
+          </div>
+
+          <Post />
+        </div>
       </section>
 
       {/* Features Section */}
