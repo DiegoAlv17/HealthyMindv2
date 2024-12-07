@@ -13,6 +13,7 @@ import Form from "./form";
 import Line from "./line";
 import Pie from "./pie";
 import FAQ from "./faq";
+import Centros from "./centros";
 import Geography from "./geography";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "../theme";
@@ -38,6 +39,7 @@ function Adminapp() {
               <Route path="/" element={<Dashboard />} />
               <Route path="/team" element={<Team />} />
               <Route path="/users" element={<Users />} />
+              <Route path="/centros" element={<Centros />} />
               <Route path="/form" element={<Form />} />
               <Route path="/bar" element={<Bar />} />
               <Route path="/pie" element={<Pie />} />

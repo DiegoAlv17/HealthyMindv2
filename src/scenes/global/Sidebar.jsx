@@ -7,6 +7,7 @@ import { tokens } from "../../theme";
 import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
 import ContactsOutlinedIcon from "@mui/icons-material/ContactsOutlined";
+import HealthAndSafetyIcon from '@mui/icons-material/HealthAndSafety';
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
@@ -140,16 +141,23 @@ const Sidebar = () => {
               Data
             </Typography>
             <Item
-              title="Equipo"
+              title="Psicologos"
               to="/admin/team"
               icon={<PeopleOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
             />
             <Item
-              title="Usuarios"
+              title="Pacientes"
               to="/admin/users"
               icon={<ContactsOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Centros de Salud"
+              to="/admin/centros"
+              icon={<HealthAndSafetyIcon />}
               selected={selected}
               setSelected={setSelected}
             />

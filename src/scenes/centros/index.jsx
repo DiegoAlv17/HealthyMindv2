@@ -1,41 +1,62 @@
-import { Box, Button, Typography, useTheme, TextField, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import {
+  Box,
+  Button,
+  Typography,
+  useTheme,
+  TextField,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+} from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import { useEffect, useState } from "react";
-import { getPsicologos, createPsicologo, updatePsicologo, deletePsicologo } from "../../api/PsicologosRequest.js"; // Asegúrate de que las funciones estén bien implementadas
+import {
+  createCentro,
+  deleteCentro,
+  getCentros,
+  updateCentro,
+} from "../../api/CentroRequest.js"; // Asegúrate de que las funciones estén bien implementadas
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import Header from "../../components/Header";
 
-const Team = () => {
+const Centros = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
-  // Estado para almacenar los datos de los psicólogos
-  const [psicologos, setPsicologos] = useState([]);
+  // Estado para almacenar los datos de los centros de salud
+  const [centros, setCentros] = useState([]);
   const [openDialog, setOpenDialog] = useState(false); // Controla la apertura del diálogo
-  const [formData, setFormData] = useState({ nombre: "", edad: "", telefono: "", correo: "", especialidad: "" }); // Datos del formulario
+  const [formData, setFormData] = useState({
+    nombre: "",
+    direccion: "",
+    telefono: "",
+    correo: "",
+    especialidad: "",
+  }); // Datos del formulario
   const [isEditing, setIsEditing] = useState(false); // Estado para saber si estamos editando
 
-  // Efecto para obtener los psicólogos
+  // Efecto para obtener los centros de salud
   useEffect(() => {
-    const fetchPsicologos = async () => {
-      const data = await getPsicologos();
-      console.log("Psicólogos:", data);  // Añadir esto para inspeccionar los datos
+    const fetchCentros = async () => {
+      const data = await getCentros();
+      console.log("Centros de Salud:", data); // Añadir esto para inspeccionar los datos
       if (data) {
-        const psicologosData = data.map(psicologo => ({
-          id: psicologo._id,
-          nombre: psicologo.nombre,
-          edad: psicologo.edad,
-          telefono: psicologo.telefono,
-          correo: psicologo.correo,
-          especialidad: psicologo.especialidad,
+        const centrosData = data.map((centro) => ({
+          id: centro._id,
+          nombre: centro.nombre,
+          direccion: centro.direccion,
+          telefono: centro.telefono,
+          correo: centro.correo,
+          especialidad: centro.especialidad,
         }));
-        setPsicologos(psicologosData);
+        setCentros(centrosData);
       }
     };
-  
-    fetchPsicologos();
+
+    fetchCentros();
   }, []);
 
   // Función para manejar el cambio de datos en el formulario
@@ -45,65 +66,76 @@ const Team = () => {
   };
 
   // Función para abrir el formulario de crear/editar
-  const openFormDialog = (psicologo = null) => {
-    if (psicologo) {
-      setFormData(psicologo); // Rellenar los datos si es para editar
+  const openFormDialog = (centro = null) => {
+    if (centro) {
+      setFormData(centro); // Rellenar los datos si es para editar
       setIsEditing(true);
     } else {
-      setFormData({ nombre: "", edad: "", telefono: "", correo: "", especialidad: "" }); // Limpiar el formulario si es para crear
+      setFormData({
+        nombre: "",
+        direccion: "",
+        telefono: "",
+        correo: "",
+        especialidad: "",
+      }); // Limpiar el formulario si es para crear
       setIsEditing(false);
     }
     setOpenDialog(true);
   };
 
-  // Función para crear o actualizar un psicólogo
+  // Función para crear o actualizar un centro de salud
   const handleSubmit = async () => {
     try {
       if (isEditing) {
-        await updatePsicologo(formData.id, formData); // Actualizar psicólogo
+        await updateCentro(formData.id, formData); // Actualizar centro de salud
       } else {
-        await createPsicologo(formData); // Crear psicólogo
+        await createCentro(formData); // Crear centro de salud
       }
       setOpenDialog(false);
-      // Recargar los psicólogos actualizados desde la API
-      const data = await getPsicologos();
-      const psicologosData = data.map(psicologo => ({
-        id: psicologo._id,
-        nombre: psicologo.nombre,
-        edad: psicologo.edad,
-        telefono: psicologo.telefono,
-        correo: psicologo.correo,
-        especialidad: psicologo.especialidad,
+      // Recargar los centros de salud actualizados desde la API
+      const data = await getCentros();
+      const centrosData = data.map((centro) => ({
+        id: centro._id,
+        nombre: centro.nombre,
+        direccion: centro.direccion,
+        telefono: centro.telefono,
+        correo: centro.correo,
+        especialidad: centro.especialidad,
       }));
-      setPsicologos(psicologosData);
+      setCentros(centrosData);
     } catch (error) {
-      console.error("Error al crear/actualizar el psicólogo:", error);
+      console.error("Error al crear/actualizar el centro de salud:", error);
     }
   };
 
-  // Función para eliminar un psicólogo
+  // Función para eliminar un centro de salud
   const handleDelete = async (id) => {
     try {
-      await deletePsicologo(id); // Llamada a la API de eliminación
-      const data = await getPsicologos(); // Recargar los datos
-      const psicologosData = data.map(psicologo => ({
-        id: psicologo._id,
-        nombre: psicologo.nombre,
-        edad: psicologo.edad,
-        telefono: psicologo.telefono,
-        correo: psicologo.correo,
-        especialidad: psicologo.especialidad,
+      await deleteCentro(id); // Llamada a la API de eliminación
+      const data = await getCentros(); // Recargar los datos
+      const centrosData = data.map((centro) => ({
+        id: centro._id,
+        nombre: centro.nombre,
+        direccion: centro.direccion,
+        telefono: centro.telefono,
+        correo: centro.correo,
+        especialidad: centro.especialidad,
       }));
-      setPsicologos(psicologosData);
+      setCentros(centrosData);
     } catch (error) {
-      console.error("Error al eliminar el psicólogo:", error);
+      console.error("Error al eliminar el centro de salud:", error);
     }
   };
 
   const columns = [
     { field: "id", headerName: "ID", flex: 0.5 },
-    { field: "nombre", headerName: "Nombre", flex: 1, cellClassName: "name-column--cell" },
-    { field: "edad", headerName: "Edad", type: "number", headerAlign: "left", align: "left" },
+    {
+      field: "nombre",
+      headerName: "Nombre",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    { field: "direccion", headerName: "Dirección", flex: 1 },
     { field: "telefono", headerName: "Teléfono", flex: 1 },
     { field: "correo", headerName: "Correo", flex: 1 },
     { field: "especialidad", headerName: "Especialidad", flex: 1 },
@@ -113,19 +145,11 @@ const Team = () => {
       flex: 1,
       renderCell: (params) => (
         <>
-          <Button
-            startIcon={<EditIcon />}
-            onClick={() => openFormDialog(params.row)}
-            sx={{ marginRight: "10px" }}
-          >
-
+          <Button onClick={() => openFormDialog(params.row)}>
+            <EditIcon />
           </Button>
-          <Button
-            color="error"
-            startIcon={<DeleteIcon />}
-            onClick={() => handleDelete(params.row.id)}
-          >
-
+          <Button color="error" onClick={() => handleDelete(params.row.id)}>
+            <DeleteIcon />
           </Button>
         </>
       ),
@@ -135,18 +159,18 @@ const Team = () => {
   return (
     <Box m="20px">
       <Header
-        title="PSICÓLOGOS"
-        subtitle="Psicólogos que forman parte del equipo de HealthyMind"
+        title="CENTROS DE SALUD"
+        subtitle="Centros de salud que forman parte de HealthyMind"
       />
-      
-      {/* Botón de Agregar Psicólogo */}
+
+      {/* Botón de Agregar Centro de Salud */}
       <Button
         variant="contained"
         color="primary"
         onClick={() => openFormDialog()}
         sx={{ marginBottom: "20px" }}
       >
-        Agregar Psicólogo
+        Agregar Centro de Salud
       </Button>
 
       <Box
@@ -179,34 +203,40 @@ const Team = () => {
         }}
       >
         <DataGrid
-          rows={psicologos} // Usamos los psicólogos obtenidos de la API
+          rows={centros} // Usamos los centros obtenidos de la API
           columns={columns}
           getRowId={(row) => row.id} // Usamos el id generado a partir de _id
         />
       </Box>
 
-      {/* Diálogo de crear/editar psicólogo */}
+      {/* Diálogo de crear/editar centro de salud */}
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-        <DialogTitle>{isEditing ? "Editar Psicólogo" : "Crear Psicólogo"}</DialogTitle>
+        <DialogTitle>
+          {isEditing ? "Editar Centro de Salud" : "Crear Centro de Salud"}
+        </DialogTitle>
         <DialogContent>
           <TextField
             label="Nombre"
             name="nombre"
+            required
             value={formData.nombre}
             onChange={handleChange}
             fullWidth
             margin="normal"
           />
           <TextField
-            label="Edad"
-            name="edad"
-            value={formData.edad}
+            required
+            label="Dirección"
+            name="direccion"
+            value={formData.direccion}
             onChange={handleChange}
             fullWidth
             margin="normal"
           />
           <TextField
+            required
             label="Teléfono"
+            type="number"
             name="telefono"
             value={formData.telefono}
             onChange={handleChange}
@@ -214,6 +244,7 @@ const Team = () => {
             margin="normal"
           />
           <TextField
+            required
             label="Correo"
             name="correo"
             value={formData.correo}
@@ -222,6 +253,7 @@ const Team = () => {
             margin="normal"
           />
           <TextField
+            required
             label="Especialidad"
             name="especialidad"
             value={formData.especialidad}
@@ -231,12 +263,16 @@ const Team = () => {
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDialog(false)} color="primary">Cancelar</Button>
-          <Button onClick={handleSubmit} color="primary">Guardar</Button>
+          <Button onClick={() => setOpenDialog(false)} color="primary">
+            Cancelar
+          </Button>
+          <Button onClick={handleSubmit} color="primary">
+            Guardar
+          </Button>
         </DialogActions>
       </Dialog>
     </Box>
   );
 };
 
-export default Team;
+export default Centros;
