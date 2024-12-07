@@ -1,8 +1,9 @@
-import axios from "axios";
+// src/api/axios.js
+import axios from 'axios';
 
-const api = axios.create({
-    baseURL: "http://localhost:3000/api",
-    withCredentials: true,
-    });
+const instance = axios.create({
+  baseURL: import.meta.env.VITE_BACKEND_URL, // Tu URL base del backend
+  withCredentials: true // Importante para manejo de cookies
+});
 
-export default api;
+export default instance;

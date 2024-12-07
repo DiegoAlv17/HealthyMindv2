@@ -1,16 +1,13 @@
 import React from 'react';
 import { Box, Button, IconButton, Typography, useTheme } from "@mui/material";
 import { tokens } from "../../theme";
-import { mockTransactions } from "../../data/mockData";
 import DownloadOutlinedIcon from "@mui/icons-material/DownloadOutlined";
-import EmailIcon from "@mui/icons-material/Email";
-import PointOfSaleIcon from "@mui/icons-material/PointOfSale";
-import PersonAddIcon from "@mui/icons-material/PersonAdd";
-import TrafficIcon from "@mui/icons-material/Traffic";
 import Header from "../../components/Header";
 import LineChart from "../../components/LineChart";
-import StatBox from "../../components/StatBox";
-import useWindowSize from "../../hooks/useWindowSize"; // Asegúrate de que la ruta sea correcta
+import BarChart from "../../components/BarChart";
+import PieChart from "../../components/PieChart";
+import GeographyChart from "../../components/GeographyChart";
+import useWindowSize from "../../hooks/useWindowSize";
 
 const Dashboard = () => {
   const theme = useTheme();
@@ -19,6 +16,7 @@ const Dashboard = () => {
 
   return (
     <Box m="20px">
+      
       {/* HEADER */}
       <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap">
         <Header title="DASHBOARD" subtitle="Bienvenidos a tu panel de ADMINISTRADOR" />
@@ -39,244 +37,69 @@ const Dashboard = () => {
         </Box>
       </Box>
 
-      
       <Box
         display="grid"
         gridTemplateColumns="repeat(12, 1fr)"
-        gridAutoRows="140px"
+        gridAutoRows="600px" // Se aumentó la altura de los bloques a 600px
         gap="20px"
       >
         {/* ROW 1 */}
         <Box
-          gridColumn={size.width <= 768 ? "span 12" : "span 3"}
+          gridColumn={size.width <= 768 ? "span 12" : "span 6"}
           backgroundColor={colors.primary[400]}
           display="flex"
           alignItems="center"
           justifyContent="center"
+          padding="20px"
+          height="100%"  // Se asegura de que el bloque tenga altura completa
+          maxWidth="100%" // Asegura que el bloque no se desborde
+          overflow="hidden" // Asegura que el contenido no se desborde del contenedor
         >
-          <StatBox
-            title="12,361"
-            subtitle="Correos enviados"
-            progress="0.75"
-            increase="+14%"
-            icon={
-              <EmailIcon
-                sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
-              />
-            }
-          />
+          <BarChart isDashboard={true} style={{ width: "60%", height: "60%" }} />
         </Box>
+
         <Box
-          gridColumn={size.width <= 768 ? "span 12" : "span 3"}
+          gridColumn={size.width <= 768 ? "span 12" : "span 6"}
           backgroundColor={colors.primary[400]}
           display="flex"
           alignItems="center"
           justifyContent="center"
+          padding="20px"
+          height="100%"  // Se asegura de que el bloque tenga altura completa
+          maxWidth="100%" // Asegura que el bloque no se desborde
+          overflow="hidden" // Asegura que el contenido no se desborde del contenedor
         >
-          <StatBox
-            title="431,225"
-            subtitle="Ganancias Obtenidas"
-            progress="0.50"
-            increase="+21%"
-            icon={
-              <PointOfSaleIcon
-                sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
-              />
-            }
-          />
-        </Box>
-        <Box
-          gridColumn={size.width <= 768 ? "span 12" : "span 3"}
-          backgroundColor={colors.primary[400]}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-        >
-          <StatBox
-            title="32,441"
-            subtitle="New Clients"
-            progress="0.30"
-            increase="+5%"
-            icon={
-              <PersonAddIcon
-                sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
-              />
-            }
-          />
-        </Box>
-        <Box
-          gridColumn={size.width <= 768 ? "span 12" : "span 3"}
-          backgroundColor={colors.primary[400]}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-        >
-          <StatBox
-            title="1,325,134"
-            subtitle="Tráfico recibido"
-            progress="0.80"
-            increase="+43%"
-            icon={
-              <TrafficIcon
-                sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
-              />
-            }
-          />
+          <PieChart isDashboard={true} style={{ width: "60%", height: "60%" }} />
         </Box>
 
         {/* ROW 2 */}
         <Box
-          gridColumn={size.width <= 768 ? "span 12" : "span 8"}
-          gridRow="span 2"
+          gridColumn={size.width <= 768 ? "span 12" : "span 6"}
           backgroundColor={colors.primary[400]}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          padding="20px"
+          height="100%"  // Se asegura de que el bloque tenga altura completa
+          maxWidth="100%" // Asegura que el bloque no se desborde
+          overflow="hidden" // Asegura que el contenido no se desborde del contenedor
         >
-          <Box
-            mt="25px"
-            p="0 30px"
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            flexWrap="wrap"
-          >
-            <Box mb={size.width <= 768 ? "10px" : "0"}>
-              <Typography
-                variant="h5"
-                fontWeight="600"
-                color={colors.grey[100]}
-              >
-                Total Revenue
-              </Typography>
-              <Typography
-                variant="h3"
-                fontWeight="bold"
-                color={colors.greenAccent[500]}
-              >
-                $59,342.32
-              </Typography>
-            </Box>
-            <Box>
-              <IconButton>
-                <DownloadOutlinedIcon
-                  sx={{ fontSize: "26px", color: colors.greenAccent[500] }}
-                />
-              </IconButton>
-            </Box>
-          </Box>
-          <Box height="250px" m="-20px 0 0 0">
-            <LineChart isDashboard={true} />
-          </Box>
-        </Box>
-        <Box
-          gridColumn={size.width <= 768 ? "span 12" : "span 4"}
-          gridRow="span 2"
-          backgroundColor={colors.primary[400]}
-          overflow="auto"
-        >
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            borderBottom={`4px solid ${colors.primary[500]}`}
-            colors={colors.grey[100]}
-            p="15px"
-          >
-            <Typography color={colors.grey[100]} variant="h5" fontWeight="600">
-              Transacciones recientes
-            </Typography>
-          </Box>
-          {mockTransactions.map((transaction, i) => (
-            <Box
-              key={`${transaction.txId}-${i}`}
-              display="flex"
-              justifyContent="space-between"
-              alignItems="center"
-              borderBottom={`4px solid ${colors.primary[500]}`}
-              p="15px"
-            >
-              <Box>
-                <Typography
-                  color={colors.greenAccent[500]}
-                  variant="h5"
-                  fontWeight="600"
-                >
-                  {transaction.txId}
-                </Typography>
-                <Typography color={colors.grey[100]}>
-                  {transaction.user}
-                </Typography>
-              </Box>
-              <Box color={colors.grey[100]}>{transaction.date}</Box>
-              <Box
-                backgroundColor={colors.greenAccent[500]}
-                p="5px 10px"
-                borderRadius="4px"
-              >
-                ${transaction.cost}
-              </Box>
-            </Box>
-          ))}
+          <LineChart isDashboard={true} style={{ width: "60%", height: "60%" }} />
         </Box>
 
-        {/* ROW 3 */}
-        {/* <Box
-          gridColumn="span 4"
-          gridRow="span 2"
-          backgroundColor={colors.primary[400]}
-          p="30px"
-        >
-          <Typography variant="h5" fontWeight="600">
-            Campaign
-          </Typography>
-          <Box
-            display="flex"
-            flexDirection="column"
-            alignItems="center"
-            mt="25px"
-          >
-            <ProgressCircle size="125" />
-            <Typography
-              variant="h5"
-              color={colors.greenAccent[500]}
-              sx={{ mt: "15px" }}
-            >
-              $48,352 Ganancias Netas
-            </Typography>
-            <Typography>Incluye gastos y costos adicionales</Typography>
-          </Box>
-        </Box>
         <Box
-          gridColumn="span 4"
-          gridRow="span 2"
+          gridColumn={size.width <= 768 ? "span 12" : "span 6"}
           backgroundColor={colors.primary[400]}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          padding="20px"
+          height="100%"  // Se asegura de que el bloque tenga altura completa
+          maxWidth="100%" // Asegura que el bloque no se desborde
+          overflow="hidden" // Asegura que el contenido no se desborde del contenedor
         >
-          <Typography
-            variant="h5"
-            fontWeight="600"
-            sx={{ padding: "30px 30px 0 30px" }}
-          >
-            Sales Quantity
-          </Typography>
-          <Box height="250px" mt="-20px">
-            <BarChart isDashboard={true} />
-          </Box>
+          <GeographyChart isDashboard={true} style={{ width: "60%", height: "60%" }} />
         </Box>
-        <Box
-          gridColumn="span 4"
-          gridRow="span 2"
-          backgroundColor={colors.primary[400]}
-          padding="30px"
-        >
-          <Typography
-            variant="h5"
-            fontWeight="600"
-            sx={{ marginBottom: "15px" }}
-          >
-            Tráfico a nivel geográfico
-          </Typography>
-          <Box height="200px">
-            <GeographyChart isDashboard={true} />
-          </Box>
-        </Box> */}
       </Box>
     </Box>
   );

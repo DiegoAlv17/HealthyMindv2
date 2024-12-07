@@ -1,158 +1,162 @@
-import { Box, Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle, IconButton } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Box, Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { useTheme } from "@mui/material";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
-import { getPacientes, createPaciente, updatePaciente, deletePaciente } from "../../api/PacientesRequest.js";  // Asegúrate de importar las funciones necesarias
-import { useEffect, useState } from "react";
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { useTheme } from "@mui/material";
+import { getPacientes, createPaciente, updatePaciente, deleteUser } from "../../api/UserRequest.js";
 
 const Users = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
-  // Estado para almacenar los pacientes
   const [pacientes, setPacientes] = useState([]);
-  const [openDialog, setOpenDialog] = useState(false); // Controla la apertura del diálogo
-  const [isEditMode, setIsEditMode] = useState(false); // Controla si estamos en modo de edición
-  const [selectedPaciente, setSelectedPaciente] = useState(null); // Paciente seleccionado
-  const [formData, setFormData] = useState({ nombre: "", edad: "", telefono: "", correo: "", direccion: "", ciudad: "" }); // Datos del formulario
+  const [openDialog, setOpenDialog] = useState(false);
+  const [editingPaciente, setEditingPaciente] = useState(null);
+  const [formData, setFormData] = useState({ name: "", email: "", profilePicture: "", password: "", role: "paciente" });
 
-  // Llamada a la API para obtener los pacientes
-  useEffect(() => {
-    const fetchPacientes = async () => {
-      const data = await getPacientes();
-      if (data) {
-        // Mapea los datos de la API a las columnas necesarias para el DataGrid
-        const pacientesData = data.map(paciente => ({
-          id: paciente._id,   // Asegúrate de que `_id` sea el identificador único
-          name: paciente.nombre,
-          age: paciente.edad,
-          phone: paciente.telefono,
-          email: paciente.correo,
-          address: paciente.direccion,
-          city: paciente.ciudad,
-        }));
-        setPacientes(pacientesData);
-      }
-    };
-
-    fetchPacientes();
-  }, []); // Solo se ejecuta una vez cuando el componente se monta
-
+  // Columnas de la tabla
   const columns = [
     { field: "id", headerName: "ID", flex: 0.5 },
-    { field: "name", headerName: "Name", flex: 1, cellClassName: "name-column--cell" },
-    { field: "age", headerName: "Age", type: "number", headerAlign: "left", align: "left" },
-    { field: "phone", headerName: "Phone Number", flex: 1 },
-    { field: "email", headerName: "Email", flex: 1 },
-    { field: "address", headerName: "Address", flex: 1 },
-    { field: "city", headerName: "City", flex: 1 },
     {
-      field: "actions",
-      headerName: "Actions",
+      field: "name",
+      headerName: "Nombre",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "email",
+      headerName: "Correo Electrónico",
+      flex: 1,
+    },
+    {
+      field: "profilePicture",
+      headerName: "Foto de Perfil",
       flex: 1,
       renderCell: (params) => (
-        <>
-          <IconButton onClick={() => handleEdit(params.row)}>
-            <EditIcon color="primary" />
-          </IconButton>
-          <IconButton onClick={() => handleDelete(params.row.id)}>
-            <DeleteIcon color="secondary" />
-          </IconButton>
-        </>
-      )
-    }
+        <img
+          src={params.value}
+          alt="Foto de perfil"
+          style={{ width: "50px", height: "50px", borderRadius: "50%" }}
+        />
+      ),
+    },
+    {
+      field: "actions",
+      headerName: "Acciones",
+      flex: 1,
+      renderCell: (params) => (
+        <Box>
+          <Button
+            variant="outlined"
+            color="primary"
+            size="small"
+            onClick={() => handleEdit(params.row)}
+          >
+            Editar
+          </Button>
+          <Button
+            variant="outlined"
+            color="secondary"
+            size="small"
+            style={{ marginLeft: "10px" }}
+            onClick={() => handleDelete(params.row.id)}
+          >
+            Eliminar
+          </Button>
+        </Box>
+      ),
+    },
   ];
 
-  // Función para manejar el cambio de datos en el formulario
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevState) => ({ ...prevState, [name]: value }));
-  };
+  // Obtener datos de pacientes al montar el componente
+  useEffect(() => {
+    fetchPacientes();
+  }, []);
 
-  // Función para manejar el envío del formulario (crear o actualizar)
-  const handleSubmit = async () => {
+  const fetchPacientes = async () => {
     try {
-      if (isEditMode) {
-        // Actualizar el paciente
-        await updatePaciente(selectedPaciente.id, formData);
-      } else {
-        // Crear un nuevo paciente
-        await createPaciente(formData);
-      }
-      setOpenDialog(false);
-      // Actualizar la lista de pacientes
       const data = await getPacientes();
-      const pacientesData = data.map(paciente => ({
-        id: paciente._id,
-        name: paciente.nombre,
-        age: paciente.edad,
-        phone: paciente.telefono,
-        email: paciente.correo,
-        address: paciente.direccion,
-        city: paciente.ciudad,
+      const formattedData = data.map((paciente, index) => ({
+        id: paciente._id || `row-${index}`,
+        name: paciente.name,
+        email: paciente.email,
+        profilePicture: paciente.profilePicture,
       }));
-      setPacientes(pacientesData);
+      setPacientes(formattedData);
     } catch (error) {
-      console.error("Error al guardar paciente:", error);
+      console.error("Error al obtener los pacientes:", error);
     }
   };
 
-  // Función para manejar la edición de un paciente
+  const handleOpenDialog = () => {
+    setFormData({ name: "", email: "", profilePicture: "", password: "", role: "paciente" });
+    setEditingPaciente(null);
+    setOpenDialog(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSave = async () => {
+    try {
+      if (editingPaciente) {
+        // Actualizar paciente
+        await updatePaciente(editingPaciente.id, formData);
+      } else {
+        // Crear nuevo paciente
+        await createPaciente(formData);
+      }
+      fetchPacientes();
+      handleCloseDialog();
+    } catch (error) {
+      console.error("Error al guardar el paciente:", error);
+    }
+  };
+
   const handleEdit = (paciente) => {
-    setIsEditMode(true);
-    setSelectedPaciente(paciente);
+    setEditingPaciente(paciente);
     setFormData({
-      nombre: paciente.name,
-      edad: paciente.age,
-      telefono: paciente.phone,
-      correo: paciente.email,
-      direccion: paciente.address,
-      ciudad: paciente.city
+      name: paciente.name,
+      email: paciente.email,
+      profilePicture: paciente.profilePicture,
+      password: "",
+      role: paciente.role || "paciente",
     });
     setOpenDialog(true);
   };
 
-  // Función para manejar la eliminación de un paciente
   const handleDelete = async (id) => {
     try {
-      await deletePaciente(id); // Llamada a la API para eliminar el paciente
-      // Actualizar la lista de pacientes
-      const data = await getPacientes();
-      const pacientesData = data.map(paciente => ({
-        id: paciente._id,
-        name: paciente.nombre,
-        age: paciente.edad,
-        phone: paciente.telefono,
-        email: paciente.correo,
-        address: paciente.direccion,
-        city: paciente.ciudad,
-      }));
-      setPacientes(pacientesData);
+      await deleteUser(id);
+      fetchPacientes();
     } catch (error) {
-      console.error("Error al eliminar paciente:", error);
+      console.error("Error al eliminar el paciente:", error);
     }
   };
 
   return (
     <Box m="20px">
       <Header
-        title="Usuarios"
-        subtitle="Lista de usuarios registrados en la aplicación"
+        title="Pacientes"
+        subtitle="Lista de pacientes registrados en la aplicación"
       />
-      <Button 
-        onClick={() => setOpenDialog(true)} 
-        color="primary" 
+      <Button
         variant="contained"
-        sx={{ marginBottom: '20px' }}
+        color="primary"
+        onClick={handleOpenDialog}
+        style={{ marginBottom: "20px" }}
       >
-        Agregar Paciente
+        Crear Paciente
       </Button>
-      
       <Box
-        m="40px 0 0 0"
         height="75vh"
         sx={{
           "& .MuiDataGrid-root": {
@@ -184,68 +188,61 @@ const Users = () => {
         }}
       >
         <DataGrid
-          rows={pacientes}  // Usamos los pacientes obtenidos de la API
+          rows={pacientes}
           columns={columns}
+          getRowId={(row) => row.id}
           components={{ Toolbar: GridToolbar }}
         />
       </Box>
 
-      {/* Diálogo para agregar o editar paciente */}
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-        <DialogTitle>{isEditMode ? "Editar Paciente" : "Crear Paciente"}</DialogTitle>
+      {/* Diálogo para Crear/Editar */}
+      <Dialog open={openDialog} onClose={handleCloseDialog}>
+        <DialogTitle>{editingPaciente ? "Editar Paciente" : "Crear Paciente"}</DialogTitle>
         <DialogContent>
           <TextField
+            margin="dense"
+            name="name"
             label="Nombre"
-            name="nombre"
-            value={formData.nombre}
-            onChange={handleChange}
+            type="text"
             fullWidth
-            margin="normal"
+            value={formData.name}
+            onChange={handleInputChange}
           />
           <TextField
-            label="Edad"
-            name="edad"
-            value={formData.edad}
-            onChange={handleChange}
+            margin="dense"
+            name="email"
+            label="Correo Electrónico"
+            type="email"
             fullWidth
-            margin="normal"
+            value={formData.email}
+            onChange={handleInputChange}
           />
           <TextField
-            label="Teléfono"
-            name="telefono"
-            value={formData.telefono}
-            onChange={handleChange}
+            margin="dense"
+            name="profilePicture"
+            label="URL de Foto de Perfil"
+            type="text"
             fullWidth
-            margin="normal"
+            value={formData.profilePicture}
+            onChange={handleInputChange}
           />
           <TextField
-            label="Correo"
-            name="correo"
-            value={formData.correo}
-            onChange={handleChange}
+            margin="dense"
+            name="password"
+            label="Contraseña"
+            type="password"
             fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Dirección"
-            name="direccion"
-            value={formData.direccion}
-            onChange={handleChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            label="Ciudad"
-            name="ciudad"
-            value={formData.ciudad}
-            onChange={handleChange}
-            fullWidth
-            margin="normal"
+            value={formData.password}
+            onChange={handleInputChange}
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDialog(false)} color="primary">Cancelar</Button>
-          <Button onClick={handleSubmit} color="primary">Guardar</Button>
+          <Button onClick={handleCloseDialog} color="secondary">
+            Cancelar
+          </Button>
+          <Button onClick={handleSave} color="primary">
+            Guardar
+          </Button>
         </DialogActions>
       </Dialog>
     </Box>

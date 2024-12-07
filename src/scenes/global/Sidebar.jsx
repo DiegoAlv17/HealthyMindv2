@@ -26,7 +26,7 @@ const Sidebar = () => {
   const [selected, setSelected] = useState("Dashboard");
   
   // Obtén el nombre del administrador desde el contexto
-  const { adminName } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
 
   const Item = ({ title, to, icon, selected, setSelected }) => {
     const theme = useTheme();
@@ -115,7 +115,7 @@ const Sidebar = () => {
                   fontWeight="bold"
                   sx={{ m: "10px 0 0 0" }}
                 >
-                  {adminName || "Administrador"}
+                  {user.name || "Administrador"}
                 </Typography>
                 <Typography variant="h5" color={colors.pinkAccent[500]}>
                   Administrador

@@ -1,156 +1,206 @@
-import { Box, Button, Typography, useTheme, TextField, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import React, { useEffect, useState } from "react";
+import { Box, Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
-import { useEffect, useState } from "react";
-import { getPsicologos, createPsicologo, updatePsicologo, deletePsicologo } from "../../api/PsicologosRequest.js"; // Asegúrate de que las funciones estén bien implementadas
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
 import Header from "../../components/Header";
+import { useTheme } from "@mui/material";
+import { getPsicologos, createPsicologo, updatePsicologo,deleteUser } from "../../api/UserRequest.js";
 
-const Team = () => {
+const Psychologists = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
-  // Estado para almacenar los datos de los psicólogos
   const [psicologos, setPsicologos] = useState([]);
-  const [openDialog, setOpenDialog] = useState(false); // Controla la apertura del diálogo
-  const [formData, setFormData] = useState({ nombre: "", edad: "", telefono: "", correo: "", especialidad: "" }); // Datos del formulario
-  const [isEditing, setIsEditing] = useState(false); // Estado para saber si estamos editando
+  const [openDialog, setOpenDialog] = useState(false);
+  const [editingPsicologo, setEditingPsicologo] = useState(null);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    profilePicture: "",
+    password: "",
+    role: "psicologo",
+    bio: "",
+    experiencie: "",
+    specialties: [],
+  });
 
-  // Efecto para obtener los psicólogos
+  // Columnas de la tabla
+  const columns = [
+    { field: "id", headerName: "ID", flex: 0.5 },
+    {
+      field: "name",
+      headerName: "Nombre",
+      flex: 1,
+      cellClassName: "name-column--cell",
+    },
+    {
+      field: "email",
+      headerName: "Correo Electrónico",
+      flex: 1,
+    },
+    {
+      field: "profilePicture",
+      headerName: "Foto de Perfil",
+      flex: 1,
+      renderCell: (params) => (
+        <img
+          src={params.value}
+          alt="Foto de perfil"
+          style={{ width: "50px", height: "50px", borderRadius: "50%" }}
+        />
+      ),
+    },
+    {
+      field: "bio",
+      headerName: "Biografía",
+      flex: 1.5,
+    },
+    {
+      field: "experiencie",
+      headerName: "Experiencia",
+      flex: 1,
+    },
+    {
+      field: "specialties",
+      headerName: "Especialidades",
+      flex: 1.5,
+      renderCell: (params) => params.value.join(", "),
+    },
+    {
+      field: "actions",
+      headerName: "Acciones",
+      flex: 1,
+      renderCell: (params) => (
+        <Box>
+          <Button
+            variant="outlined"
+            color="primary"
+            size="small"
+            onClick={() => handleEdit(params.row)}
+          >
+            Editar
+          </Button>
+          <Button
+            variant="outlined"
+            color="secondary"
+            size="small"
+            style={{ marginLeft: "10px" }}
+            onClick={() => handleDelete(params.row.id)}
+          >
+            Eliminar
+          </Button>
+        </Box>
+      ),
+    },
+  ];
+
+  // Obtener datos de psicólogos al montar el componente
   useEffect(() => {
-    const fetchPsicologos = async () => {
-      const data = await getPsicologos();
-      console.log("Psicólogos:", data);  // Añadir esto para inspeccionar los datos
-      if (data) {
-        const psicologosData = data.map(psicologo => ({
-          id: psicologo._id,
-          nombre: psicologo.nombre,
-          edad: psicologo.edad,
-          telefono: psicologo.telefono,
-          correo: psicologo.correo,
-          especialidad: psicologo.especialidad,
-        }));
-        setPsicologos(psicologosData);
-      }
-    };
-  
     fetchPsicologos();
   }, []);
 
-  // Función para manejar el cambio de datos en el formulario
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevState) => ({ ...prevState, [name]: value }));
+  const fetchPsicologos = async () => {
+    try {
+      const data = await getPsicologos();
+      const formattedData = data.map((psicologo, index) => ({
+        id: psicologo._id || `row-${index}`,
+        name: psicologo.name,
+        email: psicologo.email,
+        profilePicture: psicologo.profilePicture,
+        bio: psicologo.bio,
+        experiencie: psicologo.experiencie,
+        specialties: psicologo.specialties || [],
+      }));
+      setPsicologos(formattedData);
+    } catch (error) {
+      console.error("Error al obtener los psicólogos:", error);
+    }
   };
 
-  // Función para abrir el formulario de crear/editar
-  const openFormDialog = (psicologo = null) => {
-    if (psicologo) {
-      setFormData(psicologo); // Rellenar los datos si es para editar
-      setIsEditing(true);
-    } else {
-      setFormData({ nombre: "", edad: "", telefono: "", correo: "", especialidad: "" }); // Limpiar el formulario si es para crear
-      setIsEditing(false);
-    }
+  const handleOpenDialog = () => {
+    setFormData({
+      name: "",
+      email: "",
+      profilePicture: "",
+      password: "",
+      role: "psicologo",
+      bio: "",
+      experiencie: "",
+      specialties: [],
+    });
+    setEditingPsicologo(null);
     setOpenDialog(true);
   };
 
-  // Función para crear o actualizar un psicólogo
-  const handleSubmit = async () => {
+  const handleCloseDialog = () => {
+    setOpenDialog(false);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSpecialtiesChange = (e) => {
+    const specialties = e.target.value.split(",").map((s) => s.trim());
+    setFormData({ ...formData, specialties });
+  };
+
+  const handleSave = async () => {
     try {
-      if (isEditing) {
-        await updatePsicologo(formData.id, formData); // Actualizar psicólogo
+      if (editingPsicologo) {
+        // Actualizar psicólogo
+        await updatePsicologo(editingPsicologo.id, formData);
       } else {
-        await createPsicologo(formData); // Crear psicólogo
+        // Crear nuevo psicólogo
+        await createPsicologo(formData);
       }
-      setOpenDialog(false);
-      // Recargar los psicólogos actualizados desde la API
-      const data = await getPsicologos();
-      const psicologosData = data.map(psicologo => ({
-        id: psicologo._id,
-        nombre: psicologo.nombre,
-        edad: psicologo.edad,
-        telefono: psicologo.telefono,
-        correo: psicologo.correo,
-        especialidad: psicologo.especialidad,
-      }));
-      setPsicologos(psicologosData);
+      fetchPsicologos();
+      handleCloseDialog();
     } catch (error) {
-      console.error("Error al crear/actualizar el psicólogo:", error);
+      console.error("Error al guardar el psicólogo:", error);
     }
   };
 
-  // Función para eliminar un psicólogo
+  const handleEdit = (psicologo) => {
+    setEditingPsicologo(psicologo);
+    setFormData({
+      name: psicologo.name,
+      email: psicologo.email,
+      profilePicture: psicologo.profilePicture,
+      password: "",
+      role: psicologo.role || "psicologo",
+      bio: psicologo.bio,
+      experiencie: psicologo.experiencie,
+      specialties: psicologo.specialties,
+    });
+    setOpenDialog(true);
+  };
+
   const handleDelete = async (id) => {
     try {
-      await deletePsicologo(id); // Llamada a la API de eliminación
-      const data = await getPsicologos(); // Recargar los datos
-      const psicologosData = data.map(psicologo => ({
-        id: psicologo._id,
-        nombre: psicologo.nombre,
-        edad: psicologo.edad,
-        telefono: psicologo.telefono,
-        correo: psicologo.correo,
-        especialidad: psicologo.especialidad,
-      }));
-      setPsicologos(psicologosData);
+      await deleteUser(id);
+      fetchPsicologos();
     } catch (error) {
       console.error("Error al eliminar el psicólogo:", error);
     }
   };
 
-  const columns = [
-    { field: "id", headerName: "ID", flex: 0.5 },
-    { field: "nombre", headerName: "Nombre", flex: 1, cellClassName: "name-column--cell" },
-    { field: "edad", headerName: "Edad", type: "number", headerAlign: "left", align: "left" },
-    { field: "telefono", headerName: "Teléfono", flex: 1 },
-    { field: "correo", headerName: "Correo", flex: 1 },
-    { field: "especialidad", headerName: "Especialidad", flex: 1 },
-    {
-      field: "acciones",
-      headerName: "Acciones",
-      flex: 1,
-      renderCell: (params) => (
-        <>
-          <Button
-            startIcon={<EditIcon />}
-            onClick={() => openFormDialog(params.row)}
-            sx={{ marginRight: "10px" }}
-          >
-
-          </Button>
-          <Button
-            color="error"
-            startIcon={<DeleteIcon />}
-            onClick={() => handleDelete(params.row.id)}
-          >
-
-          </Button>
-        </>
-      ),
-    },
-  ];
-
   return (
     <Box m="20px">
       <Header
-        title="PSICÓLOGOS"
-        subtitle="Psicólogos que forman parte del equipo de HealthyMind"
+        title="Psicólogos"
+        subtitle="Lista de psicólogos registrados en la aplicación"
       />
-      
-      {/* Botón de Agregar Psicólogo */}
       <Button
         variant="contained"
         color="primary"
-        onClick={() => openFormDialog()}
-        sx={{ marginBottom: "20px" }}
+        onClick={handleOpenDialog}
+        style={{ marginBottom: "20px" }}
       >
-        Agregar Psicólogo
+        Crear Psicólogo
       </Button>
-
       <Box
-        m="40px 0 0 0"
         height="75vh"
         sx={{
           "& .MuiDataGrid-root": {
@@ -176,67 +226,98 @@ const Team = () => {
           "& .MuiCheckbox-root": {
             color: `${colors.greenAccent[200]} !important`,
           },
+          "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
+            color: `${colors.grey[100]} !important`,
+          },
         }}
       >
         <DataGrid
-          rows={psicologos} // Usamos los psicólogos obtenidos de la API
+          rows={psicologos}
           columns={columns}
-          getRowId={(row) => row.id} // Usamos el id generado a partir de _id
+          getRowId={(row) => row.id}
+          components={{ Toolbar: GridToolbar }}
         />
       </Box>
 
-      {/* Diálogo de crear/editar psicólogo */}
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-        <DialogTitle>{isEditing ? "Editar Psicólogo" : "Crear Psicólogo"}</DialogTitle>
+      {/* Diálogo para Crear/Editar */}
+      <Dialog open={openDialog} onClose={handleCloseDialog}>
+        <DialogTitle>{editingPsicologo ? "Editar Psicólogo" : "Crear Psicólogo"}</DialogTitle>
         <DialogContent>
           <TextField
+            margin="dense"
+            name="name"
             label="Nombre"
-            name="nombre"
-            value={formData.nombre}
-            onChange={handleChange}
+            type="text"
             fullWidth
-            margin="normal"
+            value={formData.name}
+            onChange={handleInputChange}
           />
           <TextField
-            label="Edad"
-            name="edad"
-            value={formData.edad}
-            onChange={handleChange}
+            margin="dense"
+            name="email"
+            label="Correo Electrónico"
+            type="email"
             fullWidth
-            margin="normal"
+            value={formData.email}
+            onChange={handleInputChange}
           />
           <TextField
-            label="Teléfono"
-            name="telefono"
-            value={formData.telefono}
-            onChange={handleChange}
+            margin="dense"
+            name="profilePicture"
+            label="URL de Foto de Perfil"
+            type="text"
             fullWidth
-            margin="normal"
+            value={formData.profilePicture}
+            onChange={handleInputChange}
           />
           <TextField
-            label="Correo"
-            name="correo"
-            value={formData.correo}
-            onChange={handleChange}
+            margin="dense"
+            name="password"
+            label="Contraseña"
+            type="password"
             fullWidth
-            margin="normal"
+            value={formData.password}
+            onChange={handleInputChange}
           />
           <TextField
-            label="Especialidad"
-            name="especialidad"
-            value={formData.especialidad}
-            onChange={handleChange}
+            margin="dense"
+            name="bio"
+            label="Biografía"
+            type="text"
             fullWidth
-            margin="normal"
+            value={formData.bio}
+            onChange={handleInputChange}
+          />
+          <TextField
+            margin="dense"
+            name="experiencie"
+            label="Experiencia"
+            type="text"
+            fullWidth
+            value={formData.experiencie}
+            onChange={handleInputChange}
+          />
+          <TextField
+            margin="dense"
+            name="specialties"
+            label="Especialidades (separadas por comas)"
+            type="text"
+            fullWidth
+            value={formData.specialties.join(", ")}
+            onChange={handleSpecialtiesChange}
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpenDialog(false)} color="primary">Cancelar</Button>
-          <Button onClick={handleSubmit} color="primary">Guardar</Button>
+          <Button onClick={handleCloseDialog} color="secondary">
+            Cancelar
+          </Button>
+          <Button onClick={handleSave} color="primary">
+            Guardar
+          </Button>
         </DialogActions>
       </Dialog>
     </Box>
   );
 };
 
-export default Team;
+export default Psychologists;
