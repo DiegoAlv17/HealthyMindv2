@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom'; // Importa useNavigate
 import { Star, Calendar, MessageCircle } from 'lucide-react';
-import { getPsicologoById } from '../../api/UserRequest.js'; // Asegúrate de importar tu función getPsicologoById
+import { getPsicologoById } from '../../api/UserRequest.js'; // Importa la función para obtener el psicólogo
 
 export function PsicologoPerfil() {
   const { id } = useParams(); // Obtén el id de la URL
+  const navigate = useNavigate(); // Define la función navigate
   const [psychologist, setPsychologist] = useState(null); // Para almacenar los datos del psicólogo
   const [loading, setLoading] = useState(true); // Para controlar el estado de carga
   const [error, setError] = useState(null); // Para manejar posibles errores
@@ -85,13 +86,16 @@ export function PsicologoPerfil() {
               <div className="space-y-4">
                 <div className="bg-gray-50 p-4 rounded-lg">
                   <h3 className="font-semibold text-gray-900 mb-2">Experience</h3>
-                  <p className="text-gray-600">{psychologist.experiencie}</p>
+                  <p className="text-gray-600">{psychologist.experience}</p>
                 </div>
 
                 <div className="flex space-x-3">
-                  <button className="flex-1 flex items-center justify-center px-4 py-2 bg-pink-600 text-white rounded-full hover:bg-pink-700 transition-colors">
+                  <button
+                    onClick={() => navigate(`/crear-cita/${psychologist._id}`)} // Usa navigate para redirigir
+                    className="flex-1 flex items-center justify-center px-4 py-2 bg-pink-600 text-white rounded-full hover:bg-pink-700 transition-colors"
+                  >
                     <Calendar className="h-5 w-5 mr-2" />
-                    Schedule Session
+                    Programar Cita
                   </button>
                   <button className="flex-1 flex items-center justify-center px-4 py-2 border border-gray-300 text-gray-700 rounded-full hover:bg-gray-50 transition-colors">
                     <MessageCircle className="h-5 w-5 mr-2" />

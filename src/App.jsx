@@ -14,11 +14,13 @@ import Register from "./pages/Register";
 import Dashboard from "./scenes/admin-app.jsx";
 import PacientesPage from "./pages/pacientes/PacientesPage.jsx";
 import PacientesLayout from "./pages/pacientes/Layout.jsx";
+import { CrearCita } from "./components/paciente/CrearCita.jsx";
 import {Citas} from "./pages/pacientes/Citas.jsx";
 import { Chats } from "./pages/pacientes/Chats.jsx";
 import { Perfil } from "./pages/pacientes/Perfil.jsx";
 import { PsicologoPerfil } from "./pages/pacientes/PsicologoPerfil.jsx";
 
+import "./App.css";
 
 import PsicologosPage from "./pages/PsicologosPage.jsx";
 
@@ -51,7 +53,7 @@ function App() {
           <Route path="chats" element={<Chats />} />  
           <Route path="perfil" element={<Perfil />} />
           <Route path="psicologo/:id" element={<PsicologoPerfil />} />
-
+          <Route path="crear-cita/:psicologoId" element={<CrearCita/>}/>
           </Route>
           <Route
             path="/psicologos"
@@ -62,7 +64,7 @@ function App() {
             }
           />
           <Route
-            path="/admin"
+            path="/admin/*"
             element={
               <RoleBasedRoute allowedRoles={["admin"]}>
                 <Dashboard />
