@@ -14,7 +14,7 @@ const GeographyChart = ({ isDashboard = false }) => {
 
   // Obtener los datos del gráfico desde el backend
   useEffect(() => {
-    axios.get('http://localhost:3000/api/geographyChart/geography-chart-data')
+    axios.get('https://hm-backend-production.up.railway.app/api/geographyChart/geography-chart-data')
       .then(response => {
         setData(response.data);
       })
@@ -40,7 +40,7 @@ const GeographyChart = ({ isDashboard = false }) => {
   const handleSave = (country, region) => {
     const updatedCount = newCount[country];
     if (updatedCount) {
-      axios.post('http://localhost:3000/api/geographyChart/geography-chart-data-update', {
+      axios.post('https://hm-backend-production.up.railway.app/api/geographyChart/geography-chart-data-update', {
         country,
         region,
         professionalsCount: updatedCount,

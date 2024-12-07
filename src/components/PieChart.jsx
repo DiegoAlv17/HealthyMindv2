@@ -12,7 +12,7 @@ const PieChart = ({ isDashboard = false }) => {
 
   // Obtener los datos del gráfico desde el backend
   useEffect(() => {
-    axios.get('http://localhost:3000/api/pieChart/pie-chart-data')
+    axios.get('https://hm-backend-production.up.railway.app/api/pieChart/pie-chart-data')
       .then(response => {
         console.log(response.data);  // Verificar los datos de la respuesta
         const groupedData = response.data.map(item => ({
@@ -38,7 +38,7 @@ const PieChart = ({ isDashboard = false }) => {
   const handleSave = (specialty) => {
     const updatedPercentage = newPercentage[specialty];
     if (updatedPercentage) {
-      axios.post('http://localhost:3000/api/pieChart/pie-chart-data-update', {
+      axios.post('https://hm-backend-production.up.railway.app/api/pieChart/pie-chart-data-update', {
         specialty,
         percentage: updatedPercentage
       })

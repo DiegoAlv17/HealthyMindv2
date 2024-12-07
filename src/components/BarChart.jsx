@@ -12,7 +12,7 @@ const BarChart = ({ isDashboard = false }) => {
   
   // Obtener los datos del gráfico desde el backend
   useEffect(() => {
-    axios.get('http://localhost:3000/api/barChart/bar-chart-data')
+    axios.get('https://hm-backend-production.up.railway.app/api/barChart/bar-chart-data')
       .then(response => {
         const groupedData = response.data.reduce((acc, item) => {
           const existingItem = acc.find(data => data.category === item.category);
@@ -44,7 +44,7 @@ const BarChart = ({ isDashboard = false }) => {
   const handleSave = (category) => {
     const updatedCount = newCount[category];
     if (updatedCount) {
-      axios.post('http://localhost:3000/api/barChart/bar-chart-data-update', {
+      axios.post('https://hm-backend-production.up.railway.app/api/barChart/bar-chart-data-update', {
         category,
         count: updatedCount
       })

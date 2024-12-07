@@ -13,7 +13,7 @@ const LineChart = ({ isDashboard = false }) => {
 
   // Obtener los datos del gráfico desde el backend
   useEffect(() => {
-    axios.get('http://localhost:3000/api/lineChart/line-chart-data')
+    axios.get('https://hm-backend-production.up.railway.app/api/lineChart/line-chart-data')
       .then(response => {
         // Mapea los datos para que cada mes tenga su respectivo valor
         const groupedData = response.data.map(item => ({
@@ -49,7 +49,7 @@ const LineChart = ({ isDashboard = false }) => {
   const handleSave = () => {
     if (selectedMonth && newCount[selectedMonth]) {
       const updatedCount = newCount[selectedMonth];
-      axios.post('http://localhost:3000/api/lineChart/line-chart-data-update', {
+      axios.post('https://hm-backend-production.up.railway.app/api/lineChart/line-chart-data-update', {
         month: selectedMonth,
         professionalsCount: updatedCount
       })
