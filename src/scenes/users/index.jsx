@@ -4,7 +4,6 @@ import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { useTheme } from "@mui/material";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
-import { useTheme } from "@mui/material";
 import { getPacientes, createPaciente, updatePaciente, deleteUser } from "../../api/UserRequest.js";
 
 const Users = () => {
